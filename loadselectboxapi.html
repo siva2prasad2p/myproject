@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>Country Dropdown from Geonames Api</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    </head>
+</html>
+<body>
+    <select id="countryDropdown"></select>
+    <select id="capitalDropdown"></select>
+    <select id="languageDropdown"></select>
+    <script>
+        $(document).ready(function(){
+            //MAke an ajax request to the Geonames API endpoint
+            $.ajax({
+                url:'http://api.geonames.org/countryInfoJSON?username=Gouri',
+                method:'GET',
+                success:function(response){
+                    //Parse the API response and extract the data for dropdown options
+                    console.log(response)
+                    var countries = response.geonames;
+                    console.log(countries)
+                    //Populate the country dropdown with the retrieved country names
+                   $.each(countries,function(index,country){
+                    $('#countryDropdown').append($('<option>',{
+                        value:country.countryCode,
+                        text:country.countryName
+                    }))
+                   })
+                   //Event listener for country dropdown change
+                   $('#countryDropdown').change(function(){
+                     var selectedCountryCode = $(this).val();
+                     var selectedCountry = countries.find(country=>country.countryCode === selectedCountryCode)
+                     //Display the capital of the selected country
+                     $('#capitalDropdown').empty().append($('<option>',{
+                        value:selectedCountry.capital,
+                        text:selectedCountry.capital
+                     }))
+                     //Display the language of the selected country
+                     $('#languageDropdown').empty().append($('<option>',{
+                           value:selectedCountry.languages,
+                           text:selectedCountry.languages
+                     }));
+
+                   });
+                },
+                error:function(error){
+                    console.log('Error loading data from the GeoNames API')
+                }
+            })
+        })
+    </script> 
+</body>
